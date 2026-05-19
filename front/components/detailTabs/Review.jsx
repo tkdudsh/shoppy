@@ -1,31 +1,9 @@
-// 
-// import { StarRating } from '@/components/commons/StarRating.jsx';
-// import { ImageList } from '@/components/commons/ImageList.jsx';
-// import { LikeItem } from '@/components/commons/LikeItem.jsx';
-// import { FaRegCircleQuestion } from 'react-icons/fa6'
-//
-// /**
-//  * ProductDetail > Review
-//  */
-// export default async function Review() {
-//     const reviewData = await axiosData("/data/productReview.json");
-//
-//     return (
-//         <div>
-//             <ReviewTop data={reviewData} />
-//             <ReviewList />
-//         </div>
-//     );
-// }
-
-"use client";
-
 import { useState, useEffect } from "react";
-
 import { StarRating } from '@/components/commons/StarRating.jsx';
 import { ImageList } from '@/components/commons/ImageList.jsx';
 import { LikeItem } from '@/components/commons/LikeItem.jsx';
 import { FaRegCircleQuestion } from 'react-icons/fa6';
+import { axiosGet, axiosData } from "../../utils/dataFetch.js";
 
 /**
  * ProductDetail > Review
@@ -38,7 +16,7 @@ export default function Review() {
         const fetchReviewData = async () => {
             try {
                 setIsLoading(true);
-                // JSON 파일 혹은 API 호출
+                // const data = await axiosGet("/products/review");
                 const data = await axiosData("/data/productReview.json");
                 setReviewData(data);
             } catch (error) {
@@ -67,6 +45,7 @@ export default function Review() {
  * ProductDetail > Review > ReviewTop
  */
 export function ReviewTop({ data }) {
+    
     return (
         <div className='review-top'>
             <div style={{paddingTop:"20px"}}></div>

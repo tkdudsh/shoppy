@@ -10,7 +10,7 @@ export function ImageList({imgList, className}) {
                 <li key={idx}>
                     {classType === 'review'?
                     <img src= {img} />
-                    : <img src={img} /> }
+                    : <img src={`/images/${img}`} /> }
                 </li>
             )}
         </ul>

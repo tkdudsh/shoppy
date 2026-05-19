@@ -15,8 +15,9 @@ app.use(express.json());
 
 
 //라우터-> 클라이언트 요청 처리
-app.get('/products', productsRouter);
-    
+app.use('/products', productsRouter);
+app.use('/members', membersRouter);
+
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

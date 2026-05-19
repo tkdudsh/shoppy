@@ -1,3 +1,4 @@
+
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaRegUser } from 'react-icons/fa6';
@@ -24,7 +25,8 @@ export default function Login() {
     if (!formData.pwd) { setErrors(prev => ({ ...prev, pwd: '비밀번호를 입력해주세요' })); pwdRef.current.focus(); return; }
 
     // JSON 모드: 간단 로그인 시뮬레이션 (id/pwd 모두 입력 시 성공)
-    login({ userId: formData.id, role: 'ROLE_USER', accessToken: 'mock-token' });
+    const result=await axiosPost('/members/login',formData);
+    // login({ userId: formData.id, role: 'ROLE_USER', accessToken: 'mock-token' });
     alert('로그인에 성공하셨습니다.');
     navigate('/');
   };

@@ -1,2 +1,2 @@
 # shoppy
-쇼핑몰
+강의용, vite+express+mysql

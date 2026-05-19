@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import ProductAvatar from '@/components/product/ProductAvatar.jsx';
-import { groupByRows,axiosGet } from '@/utils/dataFetch.js';
+import { groupByRows, axiosGet } from '@/utils/dataFetch.js';
 
 export default function ProductList() {
   const [productList, setProductList] = useState([]);
@@ -11,8 +11,8 @@ export default function ProductList() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await axiosGet('/products'); //db 연동 로직으로 수정
-        setProductList(groupByRows(res, number));
+        const products = await axiosGet('/products'); 
+        setProductList(groupByRows(products, number));
       } catch (error) {
         console.error('상품 목록을 불러오는 중 오류 발생:', error);
       } finally {
