@@ -7,7 +7,6 @@ export default function QnA({ pid }) {
 
   useEffect(() => {
     const fetchQna = async () => {
-      // const res = await fetch('/data/productQnA.json');
       const qnaData = await axiosGet(`/products/qna/${pid}`);
       setQnaData(qnaData);
     };
