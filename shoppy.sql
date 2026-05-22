@@ -56,11 +56,34 @@ select   rid,
         list
 from product_return;
 
+--
+select * from member;
+desc member;
+
+select curdate() from dual;
+
+--
+use shoppy;
+select database();
+show tables;
+select * from cart;
+select cid from cart
+	where pid = 1 and id = 'test00' and size= 'XS';
+
+desc cart;    
+
+select sum(qty) as qty from cart where id ='test00';
+show tables;
+
+select * from view_cartlist where id='test00';
+
+select * from information_schema.views 
+	where table_schema = 'shoppy';
+show tables;
+select * from orders;
+select * from member; 
+select * from cart;   
 
 
-
-
-
-
-
+ 
 

@@ -14,6 +14,7 @@ export default function Header() {
   const authChecked = useAuthStore((s) => s.authChecked);
   const cartCount = useAuthStore((s) => s.cartCount);
   const initCartCount = useAuthStore((s) => s.initCartCount);
+  const isUpdateFlag = useAuthStore((s) => s.isUpdateFlag);
 
   useEffect(()=>{
     const fetchData = async() => {
@@ -23,7 +24,7 @@ export default function Header() {
       result.count ? initCartCount(parseInt(result.count)) : initCartCount(0);
     }    
     fetchData();
-  }, [isLogin]);
+  }, [isLogin, isUpdateFlag]);
 
 
   const handleLogout = () => {

@@ -1,11 +1,19 @@
 import { useState, useEffect, Fragment } from 'react';
 import { useAuthStore } from '@/store/authStore.js';
 import { cartItemsAddInfo, getTotalPrice } from '@/utils/cart.js';
+import { v4 as uuidv4} from 'uuid';
+import { axiosPost } from '@/utils/dataFetch.js';
+import QRModal from '../../components/commons/QRModal.jsx';
 
 export default function Checkout() {
-  const cartItems = useAuthStore((s) => s.cartItems);
-  const [cartList, setCartList] = useState([]);
-  const [totalPrice, setTotalPrice] = useState(0);
+  const cartList = useAuthStore((s) => s.cartList);
+  const userId = useAuthStore((s) => s.userId);
+  const cartCount = useAuthStore((s) => s.cartCount);
+
+  const [qrUrl, setQrUrl] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+
+  const [totalPrice, setTotalPrice] = useState(cartList[0].total_price);
   const [terms, setTerms] = useState(false);
   const [privacy, setPrivacy] = useState(false);
   const [payment, setPayment] = useState('kakao');
@@ -15,23 +23,49 @@ export default function Checkout() {
     address2: '123', memo: '문앞',
   });
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      const res = await fetch('/data/products.json');
-      const list = await res.json();
-      const enriched = cartItemsAddInfo(list, cartItems);
-      setCartList(enriched);
-      setTotalPrice(getTotalPrice(list, cartItems));
-    };
-    fetchProducts();
-  }, [cartItems]);
+  // useEffect(() => {
+  //   const fetchProducts = async () => {
+  //     const res = await fetch('/data/products.json');
+  //     const list = await res.json();
+  //     const enriched = cartItemsAddInfo(list, cartItems);
+  //     setCartList(enriched);
+  //     setTotalPrice(getTotalPrice(list, cartItems));
+  //   };
+  //   fetchProducts();
+  // }, [cartItems]);
 
-  const handlePayment = () => {
+  const handlePayment = async() => {
     if (!terms || !privacy) {
       alert('필수 약관에 모두 동의해야 결제가 가능합니다.');
       return;
     }
-    alert('결제 기능은 준비 중입니다.');
+    
+    //카카오페이 결제 준비 호출
+    //orderId, userId, itemName, quantity, totalAmount
+    //orderId - uuid 패키지 설치 및 사용
+    try{
+      const orderId = uuidv4();    
+      const itemName = cartList.length > 1 ? cartList[0].name + '등...' : cartList[0].name; 
+      const quantity = cartCount;
+      const totalAmount = totalPrice;
+      const orderData = { orderId, userId, itemName, quantity, totalAmount };
+
+      const result = await axiosPost('/kakao/ready', orderData);
+      const { tid, next_redirect_mobile_url} = result;
+      
+      if(tid) {
+        setQrUrl(next_redirect_mobile_url);
+        setShowModal(true);
+
+        //15초후 QR false로 수정 => 사설IP 이슈
+        setTimeout(() => {
+          setShowModal(false);
+        }, 15000);
+      }
+      
+    } catch(error) {
+      console.log('/kakao/ready :: error -->', error);      
+    }
   };
 
   return (
@@ -63,7 +97,7 @@ export default function Checkout() {
               <Fragment key={item.cid ?? item.pid}>
                 <div className="label">상품명</div>
                 <div className="value">
-                  <img src={item.image} alt="product" style={{ width: '35px' }} />
+                  <img src={`images/${item.image}`} alt="product" style={{ width: '35px' }} />
                   {item.name}, {item.info}, 수량({item.qty}), 가격({parseInt(item.price).toLocaleString()}원)
                 </div>
               </Fragment>
@@ -105,6 +139,18 @@ export default function Checkout() {
         <label htmlFor="privacy"> 개인정보 국외 이전 동의</label>
       </div>
       <button className="pay-button" onClick={handlePayment}>결제하기</button>
+
+      { showModal &&
+        (
+          <QRModal 
+            qrUrl = {qrUrl} 
+            amount = {totalPrice} 
+            onClose = {() => setShowModal(false)}
+          />
+        )      
+      }
+
+
     </div>
   );
 }
